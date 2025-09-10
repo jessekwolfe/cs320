@@ -1,21 +1,20 @@
 import unittest
-from solution import nQueensAll
+from solution import nQueens
 
 class TestNQueensFunction(unittest.TestCase):
-    # def test_4_queens(self):
-    #     self.assertEqual(solution.nQueensAll())
-    #     self.assertEqual(add(2, 3), 5)
+    def test_4_queens(self):
+        self.assertEqual(nQueens(4), [(0, 1), (1, 3), (2, 0), (3, 2)])
 
     def test_less_than_4_queens(self):
         print("Running less than 4 queens test: ")
         with self.assertRaises(ValueError) as err:
-            nQueensAll(3)
+            nQueens(3)
         self.assertIn("Input must be 4 or greater.", str(err.exception))
         with self.assertRaises(ValueError) as err:
-            nQueensAll(0)
+            nQueens(0)
         self.assertIn("Input must be 4 or greater.", str(err.exception))
         with self.assertRaises(ValueError) as err:
-            nQueensAll(-4)
+            nQueens(-4)
         self.assertIn("Input must be 4 or greater.", str(err.exception))
 
     # def test_8_queens(self):
