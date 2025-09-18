@@ -1,13 +1,42 @@
-def findKey(key, input_array):
+def findKey(value, input_array):
+    try:
+        _isValidParams(value, input_array)
+    except:
+        raise  # re-raises recieved exception
+
+    try:
+        i = 0
+        currentValue = input_array[i]
+        while currentValue != value:
+            i = _nextIndex(i, value, currentValue)
+            currentValue = input_array[i]
+    except:
+        raise LookupError("not in tree")
+
+    return i
+
+
+def _nextIndex(index, testValue, currentValue):
+    if testValue < currentValue:
+        return (index * 2) + 1  # left
+    else:
+        return (index * 2) + 2  # right
+
+
+def _isValidParams(key, input_array):
+    if len(input_array) == 0:
+        raise ValueError("no tree")
     if key is None:
         raise ValueError("null key")
 
-    if key < 0 or key >= len(input_array):
-        raise ValueError("null key")
-    pass
-
 
 def addKey(key, array):
+    try:
+        findKey(key, array)
+        return array  # return existing array if value already exists
+    except:
+        pass  #
+
     pass
 
 
@@ -121,11 +150,13 @@ if __name__ == "__main__":
     t2 = [4, 2, 6, 1, None, 5, 7]
     t3 = [1, None, 2, None, None, None, 4]
     t4 = [4, 2, None, 1]
-    print(f"inOrderRecurse{t1} is {inOrderRecurse(t1)}")
-    print(f"inOrderIter{t1} is {inOrderIter(t1)}")
-    print(f"inOrderRecurse{t2} is {inOrderRecurse(t2)}")
-    print(f"inOrderIter{t2} is {inOrderIter(t2)}")
-    print(f"inOrderRecurse({t3}) is {inOrderRecurse(t3)}")
-    print(f"inOrderRecurse({t3}) is {inOrderIter(t3)}")
-    print(f"inOrderRecurse({t4}) is {inOrderRecurse(t3)}")
-    print(f"inOrderRecurse({t4}) is {inOrderIter(t3)}")
+
+    print(findKey(7, t1))
+    # print(f"inOrderRecurse{t1} is {inOrderRecurse(t1)}")
+    # print(f"inOrderIter{t1} is {inOrderIter(t1)}")
+    # print(f"inOrderRecurse{t2} is {inOrderRecurse(t2)}")
+    # print(f"inOrderIter{t2} is {inOrderIter(t2)}")
+    # print(f"inOrderRecurse({t3}) is {inOrderRecurse(t3)}")
+    # print(f"inOrderRecurse({t3}) is {inOrderIter(t3)}")
+    # print(f"inOrderRecurse({t4}) is {inOrderRecurse(t3)}")
+    # print(f"inOrderRecurse({t4}) is {inOrderIter(t3)}")
