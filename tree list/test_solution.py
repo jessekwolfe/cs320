@@ -43,6 +43,27 @@ class TestTreeListFunction(unittest.TestCase):
         with self.assertRaises(ValueError) as err:
             addKey(None, [1, 2, 3])
 
+    def test_except_deleteKey(self):
+        input = [4, 2, 6, 1, 3, 5, 7]
+        with self.assertRaises(ValueError) as err:
+            deleteKey(None, [1, 2, 3])
+        with self.assertRaises(LookupError) as err:
+            deleteKey(5, [1, 2, 3])
+        with self.assertRaises(ValueError) as err:
+            deleteKey(5, [])
+
+    def test_valid_deleteKey(self):
+        input2 = [4, 2, 6, 1, 3, 5, 7]
+        self.assertEqual(
+            deleteKey(1, input2),
+            [4, 2, 6, None, 3, 5, 7],
+        )
+        self.assertEqual(
+            deleteKey(7, input2),
+            [4, 2, 6, 1, 3, 5],
+        )
+        self.assertEqual(deleteKey(7, [7]), [])
+
 
 if __name__ == "__main__":
     unittest.main()

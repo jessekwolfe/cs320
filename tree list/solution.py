@@ -72,8 +72,19 @@ def _addToExistingArray(addition_index, original_array, value):
     return original_array + list_addidtion
 
 
-def deleteKey(key, array):
-    pass
+def deleteKey(value, input_array):
+    func_array = input_array.copy()
+    try:
+        if value is None:
+            raise ValueError("null key")
+        index_key = findKey(value, func_array)
+        func_array[index_key] = None
+        if func_array[len(func_array) - 1] == None:
+            while len(func_array) != 0 and func_array[-1] is None:
+                func_array.pop()
+        return func_array
+    except:
+        raise
 
 
 # returns leftmost child of position n
