@@ -1,19 +1,19 @@
 def findKey(value, input_array):
     try:
-        _isValidParams(value, input_array)
+        _isValidFindParams(value, input_array)
     except:
         raise  # re-raises recieved exception
 
     try:
-        i = 0
-        currentValue = input_array[i]
+        index = 0
+        currentValue = input_array[index]
         while currentValue != value:
-            i = _nextIndex(i, value, currentValue)
-            currentValue = input_array[i]
+            index = _nextIndex(index, value, currentValue)
+            currentValue = input_array[index]
     except:
         raise LookupError("not in tree")
 
-    return i
+    return index
 
 
 def _nextIndex(index, testValue, currentValue):
@@ -23,21 +23,53 @@ def _nextIndex(index, testValue, currentValue):
         return (index * 2) + 2  # right
 
 
-def _isValidParams(key, input_array):
+def _isValidFindParams(key, input_array):
     if len(input_array) == 0:
         raise ValueError("no tree")
     if key is None:
         raise ValueError("null key")
 
 
-def addKey(key, array):
+def addKey(value, input_array):
     try:
-        findKey(key, array)
-        return array  # return existing array if value already exists
+        if value is None:
+            raise ValueError("null key")
+        if len(input_array) == 0:
+            return [value]
+        findKey(value, input_array)
+        return input_array  # return existing array if value already exists
+    except ValueError as err:
+        raise
     except:
-        pass  #
+        pass  # Continue if findKey hits index error
 
-    pass
+    i = 0
+    currentValue = input_array[i]
+    try:
+        while currentValue is not None:
+            i = _nextIndex(i, value, currentValue)
+            currentValue = input_array[i]
+        return _insertToExistingArray(input_array, i, value)
+    except:  # if we go over the current index we need to add empty
+        # values to the array, plus the value to be added
+        return _addToExistingArray(i, input_array, value)
+
+
+def _insertToExistingArray(input_array, index, value):
+    new_array = input_array.copy()
+    new_array[index] = value
+    return new_array
+
+
+def _addToExistingArray(addition_index, original_array, value):
+    list_addidtion = []
+    additions = addition_index - len(original_array)
+    for index in range(0, additions + 1, 1):
+        if index == additions:
+            list_addidtion.append(value)
+        else:
+            list_addidtion.append(None)
+    return original_array + list_addidtion
 
 
 def deleteKey(key, array):
