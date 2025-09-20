@@ -1,30 +1,38 @@
 def findKey(value, input_array):
     try:
-        _isValidFindParams(value, input_array)
-    except:
+        _isValidParams(value, input_array)
+    except ValueError or TypeError:
         raise  # re-raises recieved exception
+
+    if len(input_array) == 0:
+        raise LookupError("not in tree")
 
     try:
         index = 0
         currentValue = input_array[index]
-        while currentValue != value:
+        while currentValue and currentValue != value:
             index = _nextIndex(index, value, currentValue)
             currentValue = input_array[index]
-    except:
+    except LookupError:
         raise LookupError("not in tree")
+    except Exception or TypeError:
+        raise
 
     return index
 
 
 def _nextIndex(index, testValue, currentValue):
-    if testValue < currentValue:
-        return (index * 2) + 1  # left
-    else:
-        return (index * 2) + 2  # right
+    try:
+        if testValue < currentValue:
+            return (index * 2) + 1  # left
+        else:
+            return (index * 2) + 2  # right
+    except TypeError:  # if items uncomparable
+        raise Exception("tree error")
 
 
-def _isValidFindParams(key, input_array):
-    if len(input_array) == 0:
+def _isValidParams(key, input_array):
+    if input_array is None:
         raise ValueError("no tree")
     if key is None:
         raise ValueError("null key")
@@ -32,15 +40,18 @@ def _isValidFindParams(key, input_array):
 
 def addKey(value, input_array):
     try:
-        if value is None:
-            raise ValueError("null key")
+        _isValidParams(value, input_array)
+    except ValueError or TypeError:
+        raise  # re-raises recieved exception
+
+    try:
         if len(input_array) == 0:
             return [value]
         findKey(value, input_array)
         return input_array  # return existing array if value already exists
-    except ValueError as err:
+    except ValueError or TypeError or Exception:
         raise
-    except:
+    except LookupError:
         pass  # Continue if findKey hits index error
 
     i = 0
@@ -50,7 +61,9 @@ def addKey(value, input_array):
             i = _nextIndex(i, value, currentValue)
             currentValue = input_array[i]
         return _insertToExistingArray(input_array, i, value)
-    except:  # if we go over the current index we need to add empty
+    except TypeError:
+        raise
+    except Exception:  # if we go over the current index we need to add empty
         # values to the array, plus the value to be added
         return _addToExistingArray(i, input_array, value)
 
@@ -73,27 +86,32 @@ def _addToExistingArray(addition_index, original_array, value):
 
 
 def deleteKey(value, input_array):
-    func_array = input_array.copy()
     try:
-        if value is None:
-            raise ValueError("null key")
+        _isValidParams(value, input_array)
+    except ValueError or TypeError:
+        raise  # re-raises recieved exception
+
+    func_array = input_array.copy()
+
+    try:
         index_key = findKey(value, func_array)
-        func_array[index_key] = None
-        if func_array[len(func_array) - 1] == None:
-            while len(func_array) != 0 and func_array[-1] is None:
-                func_array.pop()
+        replacementKey = _iOINext(index_key, func_array)
+        if replacementKey is not None:
+            func_array[index_key] = func_array[replacementKey]
+            func_array[replacementKey] = None
+        else:
+            func_array[index_key] = None
+        if func_array[len(func_array) - 1] is None:
+            func_array = _trimArrayNone(func_array)
         return func_array
-    except:
+    except ValueError:
         raise
 
 
-# returns leftmost child of position n
-def _iOILeft(n, t):
-    i = prev = n
-    while (i < len(t)) and (t[i] is not None):
-        prev = i
-        i = (i * 2) + 1
-    return prev if (prev != n) else None
+def _trimArrayNone(func_array):
+    while len(func_array) != 0 and func_array[-1] is None:
+        func_array.pop()
+    return func_array
 
 
 # returns next inorder node to position n
@@ -141,65 +159,9 @@ def _iOINext(n, t):
     return -1
 
 
-# this is a generator routine that
-# returns successive elements in the
-# inorder traversal
-
-
-def _iOI(t):
-    # find leftmost child = start node
-    if (inorder := _iOILeft(0, t)) is None:
-        inorder = 0
-    while inorder >= 0:
-        yield t[inorder]
-        inorder = _iOINext(inorder, t)
-
-
-# Inorder traversal that is iterative and does
-# not use a stack (similar to a Morris
-# traversal)
-
-
-def inOrderIter(t):
-    if not len(t):
-        return []
-    return list(_iOI(t))
-
-
-# helper routine for recursive traversal
-# returns a list which is the in-order traversal
-# of the subtree rooted at node
-
-
-def _iOR(t, node):
-    if (node >= len(t)) or (t[node] is None):
-        return []
-    left = _iOR(t, (2 * node) + 1)
-    right = _iOR(t, (2 * node) + 2)
-    return left + [t[node]] + right
-
-
-# Classic inorder recursive traversal
-
-
-def inOrderRecurse(t):
-    return _iOR(t, 0)
-
-
-# insert unit tests here
-if __name__ == "__main__":
-
-    t1 = [4, 2, 6, 1, 3, 5, 7]
-    t2 = [4, 2, 6, 1, None, 5, 7]
-    t3 = [1, None, 2, None, None, None, 4]
-    t4 = [4, 2, None, 1]
-
-    print(findKey(7, t1))
-    # print(f"inOrderRecurse{t1} is {inOrderRecurse(t1)}")
-    # print(f"inOrderIter{t1} is {inOrderIter(t1)}")
-    # print(f"inOrderRecurse{t2} is {inOrderRecurse(t2)}")
-    # print(f"inOrderIter{t2} is {inOrderIter(t2)}")
-    # print(f"inOrderRecurse({t3}) is {inOrderRecurse(t3)}")
-    # print(f"inOrderRecurse({t3}) is {inOrderIter(t3)}")
-    # print(f"inOrderRecurse({t4}) is {inOrderRecurse(t3)}")
-    # print(f"inOrderRecurse({t4}) is {inOrderIter(t3)}")
+def _iOILeft(n, t):
+    i = prev = n
+    while (i < len(t)) and (t[i] is not None):
+        prev = i
+        i = (i * 2) + 1
+    return prev if (prev != n) else None
