@@ -1,6 +1,11 @@
 import unittest
-from solution import (
+from solutionWencoding import (
     radix_base,
+    to_base_x,
+    from_base_x,
+    encode_list_by_base,
+    decode_list_by_base,
+    encoded_radix_sort,
     radix_sort_index,
     radix_sort,
 )
@@ -56,19 +61,19 @@ class TestRadixSortFunction(unittest.TestCase):
 
     def test_ideal_base_4_encoded(self):
         self.assertEqual(
-            radix_base([25, 27, 29, 22, 21, 11, 12, 13, 3, 2, 1], 4),
+            radix_base([25, 27, 29, 22, 21, 11, 12, 13, 3, 2, 1], 4, False),
             [1, 2, 3, 11, 12, 13, 21, 22, 25, 27, 29],
         )
 
     def test_ideal_base_16(self):
         self.assertEqual(
-            radix_base([25, 27, 29, 22, 21, 11, 12, 13, 3, 2, 1], 16),
+            radix_base([25, 27, 29, 22, 21, 11, 12, 13, 3, 2, 1], 16, False),
             [1, 2, 3, 11, 12, 13, 21, 22, 25, 27, 29],
         )
 
     def test_ideal_base_2(self):
         self.assertEqual(
-            radix_base([25, 27, 29, 22, 21, 11, 12, 13, 3, 2, 1], 2),
+            radix_base([25, 27, 29, 22, 21, 11, 12, 13, 3, 2, 1], 2, False),
             [1, 2, 3, 11, 12, 13, 21, 22, 25, 27, 29],
         )
 
@@ -116,6 +121,108 @@ class TestRadixSortFunction(unittest.TestCase):
         with self.assertRaises(ValueError) as err:
             radix_base([1, "hello", 3], 2)
 
+    def test_to_base_4_13(self):
+        self.assertEqual(to_base_x(13, 4, 3), [0, 3, 1])
+
+    def test_to_base_4_25(self):
+        self.assertEqual(to_base_x(25, 4, 3), [1, 2, 1])
+
+    def test_from_base_4_13(self):
+        self.assertEqual(from_base_x([0, 3, 1], 4), 13)
+
+    def test_from_base_4_25(self):
+        self.assertEqual(from_base_x([1, 2, 1], 4), 25)
+
+    def test_encode_list_by_base(self):
+        self.assertEqual(
+            encode_list_by_base([25, 27, 29, 22, 21, 11, 12, 13, 3, 2, 1], 4),
+            [
+                [1, 2, 1],
+                [1, 2, 3],
+                [1, 3, 1],
+                [1, 1, 2],
+                [1, 1, 1],
+                [0, 2, 3],
+                [0, 3, 0],
+                [0, 3, 1],
+                [0, 0, 3],
+                [0, 0, 2],
+                [0, 0, 1],
+            ],
+        )
+
+    def test_decode_list_by_base(self):
+        self.assertEqual(
+            decode_list_by_base(
+                [
+                    [1, 2, 1],
+                    [1, 2, 3],
+                    [1, 3, 1],
+                    [1, 1, 2],
+                    [1, 1, 1],
+                    [0, 2, 3],
+                    [0, 3, 0],
+                    [0, 3, 1],
+                    [0, 0, 3],
+                    [0, 0, 2],
+                    [0, 0, 1],
+                ],
+                4,
+            ),
+            [25, 27, 29, 22, 21, 11, 12, 13, 3, 2, 1],
+        )
+
+    def test_encoded_radix_sort(self):
+        self.assertEqual(
+            encoded_radix_sort(
+                [
+                    [1, 2, 1],
+                    [1, 2, 3],
+                    [1, 3, 1],
+                    [1, 1, 2],
+                    [1, 1, 1],
+                    [0, 2, 3],
+                    [0, 3, 0],
+                    [0, 3, 1],
+                    [0, 0, 3],
+                    [0, 0, 2],
+                    [0, 0, 1],
+                ],
+                4,
+            ),
+            [
+                [0, 0, 1],
+                [0, 0, 2],
+                [0, 0, 3],
+                [0, 2, 3],
+                [0, 3, 0],
+                [0, 3, 1],
+                [1, 1, 1],
+                [1, 1, 2],
+                [1, 2, 1],
+                [1, 2, 3],
+                [1, 3, 1],
+            ],
+        )
+
+    def test_to_base_4_0(self):
+        self.assertEqual(to_base_x(0, 4, 6), [0, 0, 0, 0, 0, 0])
+
+    def test_from_base_4_0(self):
+        self.assertEqual(from_base_x([0, 0, 0, 0, 0, 0], 4), 0)
+
+    def test_to_base_4_13(self):
+        self.assertEqual(to_base_x(1024, 4, 6), [1, 0, 0, 0, 0, 0])
+
+    def test_from_base_4_25(self):
+        self.assertEqual(from_base_x([1, 0, 0, 0, 0, 0], 4), 1024)
+
+    def test_to_base_10_1000(self):
+        self.assertEqual(to_base_x(1000, 10, 4), [1, 0, 0, 0])
+
+    def test_from_base_10_1000(self):
+        self.assertEqual(from_base_x([1, 0, 0, 0], 10), 1000)
+
     def test_edge_case_base_multiples(self):
         self.assertEqual(
             radix_base([16, 256, 64, 1024, 4], 4),
@@ -124,18 +231,18 @@ class TestRadixSortFunction(unittest.TestCase):
 
     def test_edge_case_base_multiples_2(self):
         self.assertEqual(
-            radix_base([1024, 32, 64, 128, 256, 8, 512, 4, 2, 16], 2),
+            radix_base([1024, 32, 64, 128, 256, 8, 512, 4, 2, 16], 2, False),
             [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024],
         )
 
     def test_edge_case_single_element(self):
-        self.assertEqual(radix_base([4], 4), [4])
+        self.assertEqual(radix_base([4], 4), [4], False)
 
     def test_edge_case_single_element_0(self):
-        self.assertEqual(radix_base([0], 4), [0])
+        self.assertEqual(radix_base([0], 4), [0], False)
 
     def test_edge_case_zeros(self):
-        self.assertEqual(radix_base([0, 0, 0, 0, 0], 4), [0, 0, 0, 0, 0])
+        self.assertEqual(radix_base([0, 0, 0, 0, 0], 4), [0, 0, 0, 0, 0], False)
 
     # GPT tests
     def test_invalid_arguments_none(self):
@@ -171,7 +278,7 @@ class TestRadixSortFunction(unittest.TestCase):
     def test_valid_input_small(self):
         # This assumes radix_base correctly sorts numbers in base 2
         # You can adjust expected result depending on your implementation
-        result = radix_base([3, 1, 2], 2)
+        result = radix_base([3, 1, 2], 2, False)
         self.assertEqual(result, [1, 2, 3])
 
     def test_valid_input_large_base(self):
@@ -240,7 +347,7 @@ class TestRadixSortFunction(unittest.TestCase):
         self.assertEqual(result, sorted_nums)
 
     def test_values_containing_zero(self):
-        result = radix_base([0, 5, 2, 9, 1], 2)
+        result = radix_base([0, 5, 2, 9, 1], 2, False)
         self.assertEqual(result, [0, 1, 2, 5, 9])
 
     def test_powers_of_two(self):
@@ -251,19 +358,59 @@ class TestRadixSortFunction(unittest.TestCase):
         result = radix_base([500, 1000, 500, 250, 1000], 10)
         self.assertEqual(result, [250, 500, 500, 1000, 1000])
 
+    def test_time_large_array(self):
+        import random
+
+        nums = [random.randint(0, 1000) for _ in range(5000)]
+        sorted_nums = sorted(nums)
+        start_time = time.perf_counter()
+        result = radix_base(nums, 10)
+        end_time = time.perf_counter()
+        elapsed_time = end_time - start_time
+        self.assertEqual(result, sorted_nums)
+
+        print(
+            f"Execution time (large_array): {elapsed_time:.6f} seconds"
+        )  # 0.000019 seconds
+
+    def test_time_encode_large_array(self):
+        import random
+
+        nums = [random.randint(0, 1000) for _ in range(5000)]
+        total_start_time = time.perf_counter()
+        start_time = time.perf_counter()
+        result = encode_list_by_base(nums, 10)
+        end_time = time.perf_counter()
+        elapsed_time_encode = end_time - start_time
+
+        start_time = time.perf_counter()
+        result = encoded_radix_sort(result, 10)
+        end_time = time.perf_counter()
+        elapsed_time_sort = end_time - start_time
+
+        start_time = time.perf_counter()
+        result = decode_list_by_base(result, 10)
+        end_time = time.perf_counter()
+        total_end_time = time.perf_counter()
+        elapsed_time_decode = end_time - start_time
+        total_elapsed_time = total_end_time - total_start_time
+
+        print(f"Execution time (encode): {elapsed_time_encode:.6f} seconds")
+        print(f"Execution time (sort): {elapsed_time_sort:.6f} seconds")
+        print(f"Execution time (decode): {elapsed_time_decode:.6f} seconds")
+        print(f"Execution time (total): {total_elapsed_time:.6f} seconds")
+
     def test_time_encoded_large_array(self):
         import random
 
         nums = [random.randint(0, 1000) for _ in range(5000)]
 
         start_time = time.perf_counter()
-        result = radix_base(nums, 10)
+        result = radix_base(nums, 10, False)
         end_time = time.perf_counter()
         elapsed_time_sort = end_time - start_time
 
-        print(
-            f"Execution time (Large Encoded): {elapsed_time_sort:.6f} seconds"
-        )  # 0.005899 -> 0.004500 -> 0.004202
+        print(f"Execution time (Large Encoded): {elapsed_time_sort:.6f} seconds")
 
 
 if __name__ == "__main__":
