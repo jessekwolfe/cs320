@@ -1,4 +1,4 @@
-from playingcard import PlayingCard, CardSuit, _valid_rank_, _convert_to_rank_
+from playingcard import PlayingCard, CardSuit, _valid_rank_, _convert_to_rank
 from collections.abc import Container
 import unittest
 import random
@@ -15,7 +15,7 @@ class DirtyDeck(Container):
         if hide is not None:
             if not _valid_rank_(hide):
                 raise ValueError(f"{hide} is not a card rank")
-            self.hidden = _convert_to_rank_(hide)
+            self.hidden = _convert_to_rank(hide)
 
     def __str__(self):
         retstr = ""
