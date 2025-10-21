@@ -76,8 +76,7 @@ class CuckooSet(Collection):
 
     def __iter__(self):
         return self._allmembers_()
-
-    # ******* THIS IS LINE Y ******************
+# ******* THIS IS LINE Y ******************
 
     def __contains__(self, x):
         self.check_valid_value(x)
