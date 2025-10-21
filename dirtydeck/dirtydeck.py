@@ -8,6 +8,8 @@ _full_deck_ = [PlayingCard(s, r) for s in CardSuit for r in range(1, 14)]
 
 
 class DirtyDeck(Container):
+    deck_size = 52
+    suit_count = 4
 
     def __init__(self, *, hide=None):
         self.deck = _full_deck_.copy()
@@ -31,6 +33,15 @@ class DirtyDeck(Container):
 
     def __iter__(self):
         return iter(self.deck)
+
+    def shuffle(self):
+        base_deck = self.deck
+        shuffled_deck = []
+        while len(base_deck) > 0:
+            random_card = random.randint(0, len(base_deck)-1)
+            shuffled_deck.append(base_deck.pop(random_card))
+
+        self.deck = shuffled_deck;
 
 
 if __name__ == "__main__":

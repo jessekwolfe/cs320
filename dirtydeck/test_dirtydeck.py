@@ -7,6 +7,13 @@ class Test_dirtydeck(unittest.TestCase):
         d = DirtyDeck()
         self.assertTrue(isinstance(d, DirtyDeck))
 
+    def test_shuffle(self):
+        d = DirtyDeck()
+        shuffle = DirtyDeck()
+        shuffle.shuffle()
+        print(str(shuffle))
+        self.assertTrue(d != shuffle)
+
 
 if __name__ == "__main__":
     unittest.main()
