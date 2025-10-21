@@ -11,10 +11,10 @@ class Test_dirtydeck(unittest.TestCase):
         d = DirtyDeck()
         shuffle = DirtyDeck()
         shuffle.shuffle()
-        print(str(shuffle))
         self.assertTrue(d != shuffle)
 
     def test_rank_shuffle(self):
+        print("test_rank_shuffle:")
         d = DirtyDeck()
         shuffle = DirtyDeck(hide=4)
         shuffle.shuffle()
@@ -23,16 +23,8 @@ class Test_dirtydeck(unittest.TestCase):
         for i in range(0,4):
             self.assertTrue(shuffle.deck.pop().rank == 4)
 
-    def test_rank_shuffle(self):
-        d = DirtyDeck()
-        shuffle = DirtyDeck(hide=4)
-        shuffle.shuffle()
-        print(str(shuffle))
-        self.assertTrue(d != shuffle)
-        for i in range(0, 4):
-            self.assertTrue(shuffle.deck.pop().rank == 4)
-
     def test_rank_static_shuffle(self):
+        print("test_rank_static_shuffle:")
         d = DirtyDeck(hide=4, seed=0)
         d.shuffle()
         shuffle = DirtyDeck(hide=4, seed=0)
