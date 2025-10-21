@@ -14,6 +14,15 @@ class Test_dirtydeck(unittest.TestCase):
         print(str(shuffle))
         self.assertTrue(d != shuffle)
 
+    def test_rank_shuffle(self):
+        d = DirtyDeck()
+        shuffle = DirtyDeck(hide=4)
+        shuffle.shuffle()
+        print(str(shuffle))
+        self.assertTrue(d != shuffle)
+        for i in range(0,4):
+            self.assertTrue(shuffle.deck.pop().rank == 4)
+
 
 if __name__ == "__main__":
     unittest.main()

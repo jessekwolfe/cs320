@@ -37,11 +37,16 @@ class DirtyDeck(Container):
     def shuffle(self):
         base_deck = self.deck
         shuffled_deck = []
+        end_of_deck = []
         while len(base_deck) > 0:
             random_card = random.randint(0, len(base_deck)-1)
-            shuffled_deck.append(base_deck.pop(random_card))
+            card = base_deck.pop(random_card)
+            if card.rank == self.hidden:
+                end_of_deck.append(card)
+            else:
+                shuffled_deck.append(card)
 
-        self.deck = shuffled_deck;
+        self.deck = shuffled_deck + end_of_deck
 
 
 if __name__ == "__main__":
