@@ -11,13 +11,18 @@ class DirtyDeck(Container):
     deck_size = 52
     suit_count = 4
 
-    def __init__(self, *, hide=None):
+    def __init__(self, *, hide=None, seed=None):
         self.deck = _full_deck_.copy()
         self.hidden = None
+        self.seed = None
         if hide is not None:
             if not _valid_rank_(hide):
                 raise ValueError(f"{hide} is not a card rank")
             self.hidden = _convert_to_rank(hide)
+        if seed is not None:
+            if not isinstance(seed, int):
+                raise ValueError(f"{seed} is not int")
+            self.seed = seed
 
     def __str__(self):
         retstr = ""
@@ -38,6 +43,8 @@ class DirtyDeck(Container):
         base_deck = self.deck
         shuffled_deck = []
         end_of_deck = []
+        if self.seed is not None:
+            random.seed(self.seed)
         while len(base_deck) > 0:
             random_card = random.randint(0, len(base_deck)-1)
             card = base_deck.pop(random_card)
