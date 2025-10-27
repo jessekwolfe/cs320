@@ -8,8 +8,8 @@ _full_deck_ = [PlayingCard(s, r) for s in CardSuit for r in range(1, 14)]
 
 
 class DirtyDeck(Container):
-    deck_size = 52
-    suit_count = 4
+    DECK_SIZE = 52
+    shuffle_end = 0
 
     def __init__(self, *, hide=None, seed=None):
         self.deck = _full_deck_.copy()
@@ -40,28 +40,42 @@ class DirtyDeck(Container):
         return iter(self.deck)
 
     def shuffle(self):
-        base_deck = self.deck
-        shuffled_deck = []
-        end_of_shuffle = self.deck_size -1
-        shuffle_end = 0
+
         if self.seed is not None:
             random.seed(self.seed)
-        for i in range(len(base_deck)-1, -1, -1):
-            random_card = random.randint(0, len(base_deck) - 1 - shuffle_end)
+        for i in range(len(self.deck) - 1, -1, -1):
+            self.fisheryates(i)
 
-            if base_deck[i].rank == self.hidden:
-                self.index_card_swap( i, end_of_shuffle)
-                end_of_shuffle -= 1
-                shuffle_end += 1
-            if base_deck[random_card].rank == self.hidden:
-                self.index_card_swap(random_card, end_of_shuffle)
-                end_of_shuffle -= 1
-                shuffle_end += 1
+    def fisheryates(self, i):
+        deck = self.deck
+        random_card = random.randint(0, len(deck) - 1 - self.shuffle_end)
 
-            self.index_card_swap(i, random_card)
+        if deck[i].rank == self.hidden:
+            shuffleStop = self.DECK_SIZE - 1 - self.shuffle_end
+            self.index_card_swap(i, shuffleStop)
+            self.shuffle_end += 1
+
+        if deck[random_card].rank == self.hidden:
+            shuffleStop = self.DECK_SIZE - 1 - self.shuffle_end
+            self.index_card_swap(random_card, shuffleStop)
+            self.shuffle_end += 1
+
+        self.index_card_swap(i, random_card)
 
     def index_card_swap(self, index1, index2):
         self.deck[index1], self.deck[index2] = self.deck[index2], self.deck[index1]
+
+    def deal(self):
+        if len(self.deck) / 52 <= 0.25:
+            raise ResourceWarning("low deck")
+        return self.deck.pop(0)
+
+
+def checkHide(hide):
+    if hide is None:
+        return
+    if 0 <= hide <= 14:
+        raise ValueError("invalid hidden rank")
 
 
 if __name__ == "__main__":
