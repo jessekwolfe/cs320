@@ -7,31 +7,40 @@ def bfs(graph, start) -> list:
     except ValueError:
         raise
 
-    lot = []
+    vertexCount = graph.num_vertices()
+
     try:
-        lot.append(graph.find_vertex(start))
+        lot, explored = set_up_start(graph, start)
     except KeyError:
-        return lot
+        return []
+
+    lot_index = 0
+    while len(explored) != vertexCount:
+        tempLot = []
+        for last_lot in lot[lot_index]:
+            for edge in graph.incident(graph.find_vertex(last_lot)):
+                get_unexplored_vertex(edge, explored, tempLot)
+
+        if len(tempLot) == 0:
+            break
+        lot.append(tuple(tempLot))
+        lot_index += 1
 
     return lot
+
+
+def get_unexplored_vertex(edge, explored, tempLot):
+    for v in edge.ends():
+        if v not in explored:
+            explored.append(v)
+            tempLot.append(v)
+
+
+def set_up_start(graph, start):
+    start_vertex = graph.find_vertex(start)
+    return [(start_vertex,)], [start_vertex]
 
 
 def validParams(graph, start):
     if graph is None or start is None:
         raise ValueError("Invalid graph or vertex")
-
-
-# Algorithm BFS(G,s)
-#     Input:    An undirected graph and a vertex of Output: A labeling of edges in the connected compontent of as tree edges and cross edges
-
-#     Create an empty list, L0
-#     Mark as explored and insert s into L0
-#     while Li is not empty do
-#         Create an empty list, Li+1
-#         for each vertex, u, in Li do
-#             for each edge, e=(u,v), incident to v in G do
-#                 if vertex v is unexplored then
-#                     Label {e} as a tree edge for discovering vertex v
-#                     Mark as explored and insert {v} into {L(i+1)}
-#                 else
-#                     Label {e} as a cross or back edge
